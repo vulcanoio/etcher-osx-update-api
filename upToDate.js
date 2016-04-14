@@ -4,6 +4,14 @@ var _ = require('lodash');
 var semver = require('semver');
 
 module.exports = function (baseUrl, product, version, callback) {
+  // return 500 if no version is provided by user
+  if (!version) {
+    return {
+      "statusCode": 500,
+      "content": "No version provided"
+    }
+  }
+
   request(baseUrl + '?delimiter=/&prefix=' + product + '/', function (error, response, xml) {
     if (!error && response.statusCode == 200) {
       parseString(xml, function (err, result) {
@@ -13,7 +21,7 @@ module.exports = function (baseUrl, product, version, callback) {
           })
       });
     } else {
-      console.log(error);
+      // couldn't get data from s3
       return {
         "statusCode": 500,
         "content": error
@@ -29,12 +37,19 @@ function getVersions(obj, product, callback) {
 }
 
 function getLatest(baseUrl, versions, product, version) {
+  if (!_.includes(versions, version)) {
+    return {
+      "statusCode": 200,
+      "content": "Version does not exist"
+    }
+  }
+
   if (versions.sort(semver.rcompare)[0] != version) {
     // product is NOT up-to-date | new content
     return {
       "statusCode": 200,
       "content": {
-        "url": baseUrl + "/" + product + "/" + version + "/" + product + "-darwin-x64.zip",
+        "url": baseUrl + "/" + product + "/" + versions.sort(semver.rcompare)[0] + "/" + product + "-darwin-x64.zip",
         "name": product.capitalizeFirstLetter(),
       }
     }
