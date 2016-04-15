@@ -39,7 +39,7 @@ function getVersions(obj, product, callback) {
 function getLatest(baseUrl, versions, product, version) {
   if (!_.includes(versions, version)) {
     return {
-      "statusCode": 200,
+      "statusCode": 400,
       "content": "Version does not exist"
     }
   }
