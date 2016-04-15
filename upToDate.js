@@ -17,7 +17,7 @@ module.exports = function (baseUrl, product, version, callback) {
       parseString(xml, function (err, result) {
           getVersions(result.ListBucketResult.CommonPrefixes, product, function(versions){
             // console.log("versions: " + versions)
-            return callback(getLatest(baseUrl, versions, product, version))
+            return callback(getLatest(baseUrl, versions, product, version.normalizeV()))
           })
       });
     } else {
@@ -32,7 +32,7 @@ module.exports = function (baseUrl, product, version, callback) {
 
 function getVersions(obj, product, callback) {
     callback(_.map(obj, function(v) {
-      return v.Prefix[0].substring(product.length + 1, v.Prefix[0].length - 1)
+      return v.Prefix[0].split("/")[1];
     }))
 }
 
@@ -62,6 +62,16 @@ function getLatest(baseUrl, versions, product, version) {
   }
 }
 
+// normalize versions eg v1.1 or 1.1
+String.prototype.normalizeV = function() {
+    if (this.charAt(0) == "v") {
+      return this.substr(1);
+    } else {
+      return this.toString();
+    }
+}
+
+// help to capitalize First Letter of a string
 String.prototype.capitalizeFirstLetter = function() {
     return this.charAt(0).toUpperCase() + this.slice(1)
 }
