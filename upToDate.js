@@ -49,7 +49,7 @@ function getLatest(baseUrl, versions, product, version) {
     return {
       "statusCode": 200,
       "content": {
-        "url": baseUrl + "/" + product + "/" + versions.sort(semver.rcompare)[0] + "/" + product + "-darwin-x64.zip",
+        "url": baseUrl + "/" + product + "/" + versions.sort(semver.rcompare)[0] + "/" + product.capitalizeFirstLetter() + "-darwin-x64.zip",
         "name": product.capitalizeFirstLetter(),
       }
     }
